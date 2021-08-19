@@ -36,6 +36,19 @@ def buyLotsOfFruit(orderList):
     """
     totalCost = 0.0
     "*** YOUR CODE HERE ***"
+
+    posFruitList = fruitPrices.keys()
+
+    for idx in range(0, len(orderList)):
+        fruit = orderList[idx][0]
+        fruitNum = orderList[idx][1]
+        if fruit not in posFruitList:
+            print("ERROR : Not avaliable fruit is requested")
+            return None
+        else:
+            totalCost += fruitPrices[fruit] * fruitNum
+
+    print("The totalCost of fruits is %s" % totalCost)
     return totalCost
 
 

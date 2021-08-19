@@ -30,7 +30,15 @@ def shopSmart(orderList, fruitShops):
         fruitShops: List of FruitShops
     """
     "*** YOUR CODE HERE ***"
-    return None
+    bestShop = (fruitShops[0], fruitShops[0].getPriceOfOrder(orderList))    # store best Shop. [0] := shop, [1]= price. Initilized as fruit shop 0.
+                
+    for fruitShopIndex in range(1, len(fruitShops)):
+        currentFruitShop = fruitShops[fruitShopIndex]
+        currentFruitShopPrice = currentFruitShop.getPriceOfOrder(orderList)
+        if bestShop[1] > currentFruitShopPrice:
+            bestShop = (currentFruitShop, currentFruitShopPrice)
+            
+    return bestShop[0]
 
 
 if __name__ == '__main__':
