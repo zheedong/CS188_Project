@@ -86,52 +86,36 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    # TODO : Incomplete
-    from game import Directions
-    s = Directions.SOUTH
-    w = Directions.WEST
-    n = Directions.NORTH
-    e = Directions.EAST
 
-    visitedState = []
+    visitedState = []   # Array of tuple [(5,5), (5,4), ...]
+    result = []         # Array of Direction [s, w, s, ...]
 
     stateStack = util.Stack()
     stateStack.push((problem.getStartState(), [], 0))   # Store (state waiting for search, route, distance from start)
 
-    bestRoute = ([], 100000)    # Store (route[], distance) - starting distance big enough
-
     while ~stateStack.isEmpty():
       stackPop = stateStack.pop()
-      currentState = stackPop[0]
-      currentRoute = stackPop[1]
-      currentDistance = stackPop[2]
+      currentState = stackPop[0]      # tuple of int (0, 0)
+      currentRoute = stackPop[1]      # array of Directions [s, w, s...]
+      currentDistance = stackPop[2]   # int
 
-      successors = problem.getSuccessors(stackPop[0])
+      if problem.isGoalState(currentState):   # In case of Current is Goal
+        result = currentRoute   # Current Route becomes result  
+        break
+      else:
+        if currentState in visitedState:    # In case of Already Visited
+          continue                          # Just Pass That!
 
-      for idx in range(0, len(successors)):   # Loop For all successor
-        print("idx", idx)
-        if successors[idx][0] in visitedState:  # Already visitied
-          continue
-        elif problem.isGoalState(successors[idx][0]):     # In case of successor is goal
-          if currentDistance + successors[idx][2] < bestRoute[1]:   # Distance is shorter than bestRoute?
-            bestRoute = (currentRoute + [successors[idx][1]], currentDistance + successors[idx][2])  # update new best
-          continue
-        else:
-          visitedState.append(currentState)    # Update visitied Node
-          for idx2 in range(0, len(problem.getSuccessors(currentState))):
-            print("idx2", idx2)
-            stateStack.push((problem.getSuccessors(currentState)[idx2][0], currentRoute + [problem.getSuccessors(currentState)[idx2][1]], currentDistance + problem.getSuccessors(currentState)[idx2][2])) # Push successor to Stack - updating route and distance
-    
-    result = []
-    for idx3 in len(bestRoute[0]):
-      if bestRoute[0][idx] == 'North':
-        result.append(n)
-      elif bestRoute[0][idx] == 'South':
-        result.append(s)
-      elif bestRoute[0][idx] == 'East':
-        result.append(e)
-      elif bestRoute[0][idx] == 'West':
-        result.append(w)
+        visitedState.append(currentState)   # Now we visit current state
+
+        successors = problem.getSuccessors(currentState)   # Array of tuple [((5, 4), 'West', 1), ((), '', 0 ), ...]
+
+        for idx in range(0, len(successors)):   # Loop For all successor
+          successorState = successors[idx][0]
+          successorDirection = successors[idx][1]
+          successorDistance = successors[idx][2]
+
+          stateStack.push(( successorState , currentRoute + [successorDirection], currentDistance + successorDistance  ))
     pass
     return result
 
