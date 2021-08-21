@@ -4,20 +4,19 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
-
-
 """
 In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
 
 import util
+
 
 class SearchProblem:
     """
@@ -26,7 +25,6 @@ class SearchProblem:
 
     You do not need to change anything in this class, ever.
     """
-
     def getStartState(self):
         """
         Returns the start state for the search problem.
@@ -70,7 +68,8 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem):
     """
@@ -87,17 +86,69 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from game import Directions
+    s = Directions.SOUTH
+    w = Directions.WEST
+    n = Directions.NORTH
+    e = Directions.EAST
+
+    visitedState = []
+
+    stateStack = util.Stack()
+    stateStack.push((problem.getStartState(), [], 0))   # Store (state waiting for search, route, distance from start)
+
+    bestRoute = ([], 100000)    # Store (route[], distance) - starting distance big enough
+
+    while ~stateStack.isEmpty():
+      stackPop = stateStack.pop()
+      currentState = stackPop[0]
+      currentRoute = stackPop[1]
+      currentDistance = stackPop[2]
+
+      successors = problem.getSuccessors(stackPop[0])
+
+      for idx in range(0, len(successors)):   # Loop For all successor
+        print("idx", idx)
+        if successors[idx][0] in visitedState:  # Already visitied
+          continue
+        elif problem.isGoalState(successors[idx][0]):     # In case of successor is goal
+          if currentDistance + successors[idx][2] < bestRoute[1]:   # Distance is shorter than bestRoute?
+            bestRoute = (currentRoute + [successors[idx][1]], currentDistance + successors[idx][2])  # update new best
+          continue
+        else:
+          visitedState.append(currentState)    # Update visitied Node
+          for idx2 in range(0, len(problem.getSuccessors(currentState))):
+            print("idx2", idx2)
+            stateStack.push((problem.getSuccessors(currentState)[idx2][0], currentRoute + [problem.getSuccessors(currentState)[idx2][1]], currentDistance + problem.getSuccessors(currentState)[idx2][2])) # Push successor to Stack - updating route and distance
+    
+    result = []
+    for idx3 in len(bestRoute[0]):
+      if bestRoute[0][idx] == 'North':
+        result.append(n)
+      elif bestRoute[0][idx] == 'South':
+        result.append(s)
+      elif bestRoute[0][idx] == 'East':
+        result.append(e)
+      elif bestRoute[0][idx] == 'West':
+        result.append(w)
+    pass
+    return result
+
+    # util.raiseNotDefined()
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    print(problem) 
     util.raiseNotDefined()
+
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -105,6 +156,7 @@ def nullHeuristic(state, problem=None):
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
+
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
