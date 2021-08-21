@@ -115,7 +115,7 @@ def depthFirstSearch(problem):
           successorDirection = successors[idx][1]
           successorDistance = successors[idx][2]
 
-          stateStack.push(( successorState , currentRoute + [successorDirection], currentDistance + successorDistance  ))
+          stateStack.push((successorState , currentRoute + [successorDirection], currentDistance + successorDistance))
     pass
     return result
 
@@ -125,7 +125,39 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    print(problem) 
+
+    visitedState = []   # Array of tuple [(5,5), (5,4), ...]
+    result = []         # Array of Direction [s, w, s, ...]
+
+    stateQueue = util.Queue()
+    stateQueue.push((problem.getStartState(), [], 0))   # Store (state waiting for search, route, distance from start)
+
+    while ~stateQueue.isEmpty():
+      queuePop = stateQueue.pop()
+      currentState = queuePop[0]      # tuple of int (0, 0)
+      currentRoute = queuePop[1]      # array of Directions [s, w, s...]
+      currentDistance = queuePop[2]   # int
+
+      if problem.isGoalState(currentState):   # In case of Current is Goal
+        result = currentRoute   # Current Route becomes result  
+        break
+      else:
+        if currentState in visitedState:    # In case of Already Visited
+          continue                          # Just Pass That!
+
+        visitedState.append(currentState)   # Now we visit current state
+
+        successors = problem.getSuccessors(currentState)   # Array of tuple [((5, 4), 'West', 1), ((), '', 0 ), ...]
+
+        for idx in range(0, len(successors)):   # Loop For all successor
+          successorState = successors[idx][0]
+          successorDirection = successors[idx][1]
+          successorDistance = successors[idx][2]
+
+          stateQueue.push((successorState , currentRoute + [successorDirection], currentDistance + successorDistance))
+    pass
+    return result
+
     util.raiseNotDefined()
 
 
