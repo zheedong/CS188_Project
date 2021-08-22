@@ -177,7 +177,6 @@ def uniformCostSearch(problem):
         break
       else:
         if currentState in visitedState:    # In case of Already Visited
-          stateQueue.update(currentState, currentDistance)
           continue                          # Just Pass That!
 
         visitedState.append(currentState)   # Now we visit current state
