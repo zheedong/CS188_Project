@@ -204,7 +204,40 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    visitedState = []   # Array of tuple [(5,5), (5,4), ...]
+    result = []         # Array of Direction [s, w, s, ...]
+
+    startState = problem.getStartState()
+    stateQueue = util.PriorityQueue()
+    stateQueue.push((startState, [], 0), heuristic(startState, problem))   # Store (state waiting for search, route, distance from start)
+
+    while ~stateQueue.isEmpty():
+      queuePop = stateQueue.pop()
+      currentState = queuePop[0]      # tuple of int (0, 0)
+      currentRoute = queuePop[1]      # array of Directions [s, w, s...]
+      currentDistance = queuePop[2]   # int
+
+      if problem.isGoalState(currentState):   # In case of Current is Goal
+        result = currentRoute   # Current Route becomes result  
+        break
+      else:
+        if currentState in visitedState:    # In case of Already Visited
+          continue                          # Just Pass That!
+
+        visitedState.append(currentState)   # Now we visit current state
+
+        successors = problem.getSuccessors(currentState)   # Array of tuple [((5, 4), 'West', 1), ((), '', 0 ), ...]
+
+        for idx in range(0, len(successors)):   # Loop For all successor
+          successorState = successors[idx][0]
+          successorDirection = successors[idx][1]
+          successorDistance = successors[idx][2]
+
+          successorHeuristic = heuristic(successorState, problem)
+          stateQueue.push((successorState , currentRoute + [successorDirection], currentDistance + successorDistance), currentDistance + successorDistance + successorHeuristic)
+    pass
+    return result
+    #util.raiseNotDefined()
 
 
 # Abbreviations
