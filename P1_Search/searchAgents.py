@@ -373,9 +373,29 @@ def cornersHeuristic(state, problem):
     """
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    current_pos, corner_flag = state
+    cur_x, cur_y = current_pos
+    heu_list = []
+    for i in range(4):
+        if corner_flag[i] == True:
+            continue
+        else:
+            heu_man_distance = util.manhattanDistance(current_pos, corners[i])
+            # I think below is not consistent
+            '''
+            corner_x, corner_y = corners[i]
+            for x in range(corner_x, cur_x, 1 if cur_x > corner_x else -1):
+                for y in range(corner_y, cur_y, 1 if cur_y > corner_y else -1):
+                    if walls[x][y] == True:
+                        heu_man_distance += 1.414
+            '''
+            heu_list.append(heu_man_distance)
+    # return 0 # Default to trivial solution
+    try:
+        return min(heu_list)
+    except:
+        return 0
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
