@@ -41,6 +41,8 @@ import util
 import time
 import search
 
+import pdb
+
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
 
@@ -191,7 +193,6 @@ class PositionSearchProblem(search.SearchProblem):
          required to get there, and 'stepCost' is the incremental
          cost of expanding to that successor
         """
-
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             x,y = state
@@ -288,7 +289,6 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        self.visitedCorners = []
 
     def getStartState(self):
         """
@@ -296,7 +296,7 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        return self.startingPosition
+        return (self.startingPosition, (False, False, False, False))
         # util.raiseNotDefined()
 
     def isGoalState(self, state):
@@ -304,9 +304,9 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        if self.visitedCorners == self.corners:
-          return True
-        return False      # Not sure... What is Goal State?
+        current_position, corner_flag = state
+        check_goal = corner_flag[0] and corner_flag[1] and corner_flag[2] and corner_flag[3]
+        return check_goal
         # util.raiseNotDefined()
 
     def getSuccessors(self, state):
@@ -319,7 +319,6 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
@@ -330,7 +329,18 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
-
+            current_position, corner_flag = state
+            x, y = current_position
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
+            if not hitsWall:
+                corner_after_expend = list(corner_flag)
+                for i in range(len(self.corners)):
+                    if current_position == self.corners[i]:
+                        corner_after_expend[i] = True
+                successors.append((((nextx, nexty), tuple(corner_after_expend)), action, 1))
+        #pdb.set_trace()
         self._expanded += 1 # DO NOT CHANGE
         return successors
 
