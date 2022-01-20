@@ -48,6 +48,8 @@ class ReflexAgent(Agent):
         chosenIndex = random.choice(bestIndices) # Pick randomly among the best
 
         "Add more of your code here if you want to"
+        print(legalMoves)
+        print(scores)
 
         return legalMoves[chosenIndex]
 
@@ -74,7 +76,34 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        if not newFood.asList():
+            return 100
+
+        score = 1 / len(newFood.asList())
+
+        ghostDistance = manhattanDistance(newPos, newGhostStates[0].getPosition())
+        foodDistance =  manhattanDistance(newPos, newFood.asList()[0])
+
+        if sum(newScaredTimes) == 0:
+            for i in range(1, len(newGhostStates)):
+                newGhostPos = newGhostStates[i].getPosition()
+                curGhostDistance =  manhattanDistance(newPos, newGhostPos)
+                if newScaredTimes[i] < 3:
+                    ghostDistance = min(ghostDistance, curGhostDistance)
+            if ghostDistance < 5:
+                score -= 10000 
+                score -= 1 / ghostDistance
+            elif not ghostDistance == 0:
+                score -= 0.0001 / ghostDistance
+
+        for j in newFood.asList()[1:]:
+            curFoodDistance =  manhattanDistance(newPos, j)
+            foodDistance = min(curFoodDistance, foodDistance)
+        if not foodDistance == 0:
+            if not ghostDistance < 3:
+                score += 0.0001 / foodDistance
+
+        return score
 
 def scoreEvaluationFunction(currentGameState):
     """
