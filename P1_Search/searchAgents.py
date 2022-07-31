@@ -304,7 +304,7 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        current_position, corner_flag = state
+        _, corner_flag = state
         check_goal = corner_flag[0] and corner_flag[1] and corner_flag[2] and corner_flag[3]
         return check_goal
         # util.raiseNotDefined()
@@ -337,7 +337,7 @@ class CornersProblem(search.SearchProblem):
             if not hitsWall:
                 corner_after_expend = list(corner_flag)
                 for i in range(len(self.corners)):
-                    if current_position == self.corners[i]:
+                    if (nextx, nexty) == self.corners[i]:
                         corner_after_expend[i] = True
                 successors.append((((nextx, nexty), tuple(corner_after_expend)), action, 1))
         self._expanded += 1 # DO NOT CHANGE
