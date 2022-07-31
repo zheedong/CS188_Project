@@ -48,8 +48,8 @@ class ReflexAgent(Agent):
         chosenIndex = random.choice(bestIndices) # Pick randomly among the best
 
         "Add more of your code here if you want to"
-        print(legalMoves)
-        print(scores)
+        # print(legalMoves)
+        # print(scores)
 
         return legalMoves[chosenIndex]
 
