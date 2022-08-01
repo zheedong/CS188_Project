@@ -164,6 +164,30 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
+        MAX_SCORE = 1000000000000
+
+        if gameState.isWin() or gameState.isLose():     # Check terminal state
+            return
+        num_agents = gameState.getNumAgents()       # 2
+
+        # MAX
+        pacaman_legal_moves = gameState.getLegalActions(0)     # Get the legal move of pacman
+        print(pacaman_legal_moves)
+        successor_0 = gameState.generateSuccessor(0, pacaman_legal_moves[0])    # Pacman move to 'Left'
+        print(successor_0.isLose())     # True
+        successor_0_score = self.evaluationFunction(successor_0)
+
+        successor_1 = gameState.generateSuccessor(0, pacaman_legal_moves[1])
+        print(successor_1.isLose())     # True
+        successor_1_score = self.evaluationFunction(successor_1)
+
+        # MIN - successor_0
+        ghost_legal_moves = successor_0.getLegalActions(1)
+        print(ghost_legal_moves)
+        successor_0_0 = successor_0.generateSuccessor(1, ghost_legal_moves[0])
+        successor_0_0_score = self.evaluationFunction(successor_0_0)
+
+
         util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
