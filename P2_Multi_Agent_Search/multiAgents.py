@@ -211,18 +211,13 @@ class MinimaxAgent(MultiAgentSearchAgent):
         value = self.INF                               # JUST Big enough
         ghost_num = gameState.getNumAgents() - 1
         ghost_successors = self._get_successor_of_state(gameState, agent_index)
-        if ghost_num == 1:
+        if agent_index == ghost_num:
             for successor in ghost_successors:
                 value = min(value, self._get_value(successor, 0, search_depth + 1))
-            return value
         else:
-            if agent_index == 1:
-                for successor in ghost_successors:
-                    value = min(value, self._get_value(successor, 2, search_depth))
-            else:
-                for successor in ghost_successors:
-                    value = min(value, self._get_value(successor, 0, search_depth + 1))
-            return value
+            for successor in ghost_successors:
+                value = min(value, self._get_value(successor, agent_index + 1, search_depth))
+        return value
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
