@@ -167,22 +167,25 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         num_agents = gameState.getNumAgents()       # TODO : agent 수에 맞게 min 탐색하기 - 현재는 1이라고 가정
 
-        for _ in range(0, self.depth):
-            
+        self._get_value(gameState, True, 0)
 
 
-        util.raiseNotDefined()
 
-    def _get_value(self, gameState, is_max):
-        if self._check_is_terminal_state(gameState):
+    def _get_value(self, gameState, next_serach_is_max, current_search_depth):
+        if self._check_is_terminal_state(gameState, current_search_depth):
             return self.evaluationFunction(gameState)
-        elif is_max == True:
-            return self._get_max_value(gameState) 
+        elif next_serach_is_max:
+            return self._get_max_value(gameState, current_search_depth) 
         else:
-            return self._get_min_value(gameState)
+            return self._get_min_value(gameState, current_search_depth)
 
-    def _check_is_terminal_state(self, gameState):
-        util.raiseNotDefined
+    def _check_is_terminal_state(self, gameState, current_search_depth):
+        if current_search_depth == self.depth:
+            return True
+        elif gameState.isWin() or gameState.isLose():
+            return True
+        else:
+            return False
 
     def _get_successor_of_state(self, gameState, agent_index):
         agent_legal_moves = gameState.getLegalActions(agent_index)
@@ -191,20 +194,20 @@ class MinimaxAgent(MultiAgentSearchAgent):
             state_successors.append(gameState.generateSuccessor(agent_index, agent_move))
         return state_successors
 
-    def _get_max_value(self, gameState):
+    def _get_max_value(self, gameState, search_depth):
         value = -10000000000000         # JUST Small enough
         PACMAN_INDEX = 0                # Pre-defined index
         pacman_successors = self._get_successor_of_state(gameState, PACMAN_INDEX)
         for successor in pacman_successors:
-            value = max(value, self._get_value(successor))
+            value = max(value, self._get_value(successor, False, search_depth + 1))
         return value
 
-    def _get_min_value(self, gameState):
+    def _get_min_value(self, gameState, search_depth):
         value = 10000000000000           # JUST Big enough
         GHOST_INDEX = 1                  # Pre-defined index
         ghost_successors = self._get_successor_of_state(gameState, GHOST_INDEX)
         for successor in ghost_successors:
-            value = min(value, self._get_value(successor))
+            value = min(value, self._get_value(successor, True, search_depth + 1))
         return value
 
 
