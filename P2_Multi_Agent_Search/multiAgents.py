@@ -164,31 +164,66 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        MAX_SCORE = 1000000000000
 
-        if gameState.isWin() or gameState.isLose():     # Check terminal state
-            return
-        num_agents = gameState.getNumAgents()       # 2
+        pacman_legal_moves = gameState.getLegalActions(0)       # Pre-defined index 0
+        value = -self.INF        # Small enough
+        for pacman_move in pacman_legal_moves:
+            cur_value = self._get_value(gameState.generateSuccessor(0, pacman_move), 1, 0)
+            if value < cur_value:
+                value = cur_value
+                best_move = pacman_move
+        return best_move
 
-        # MAX
-        pacaman_legal_moves = gameState.getLegalActions(0)     # Get the legal move of pacman
-        print(pacaman_legal_moves)
-        successor_0 = gameState.generateSuccessor(0, pacaman_legal_moves[0])    # Pacman move to 'Left'
-        print(successor_0.isLose())     # True
-        successor_0_score = self.evaluationFunction(successor_0)
+    INF = 100000000000
 
-        successor_1 = gameState.generateSuccessor(0, pacaman_legal_moves[1])
-        print(successor_1.isLose())     # True
-        successor_1_score = self.evaluationFunction(successor_1)
+    def _get_value(self, gameState, agent_index, current_search_depth):
+        if self._check_is_terminal_state(gameState, current_search_depth):
+            return self.evaluationFunction(gameState)
+        elif agent_index == 0:
+            return self._get_max_value(gameState, current_search_depth) 
+        else:
+            return self._get_min_value(gameState, agent_index, current_search_depth)
 
-        # MIN - successor_0
-        ghost_legal_moves = successor_0.getLegalActions(1)
-        print(ghost_legal_moves)
-        successor_0_0 = successor_0.generateSuccessor(1, ghost_legal_moves[0])
-        successor_0_0_score = self.evaluationFunction(successor_0_0)
+    def _check_is_terminal_state(self, gameState, current_search_depth):
+        if current_search_depth == self.depth:
+            return True
+        elif gameState.isWin() or gameState.isLose():
+            return True
+        else:
+            return False
 
+    def _get_successor_of_state(self, gameState, agent_index):
+        agent_legal_moves = gameState.getLegalActions(agent_index)
+        state_successors = []
+        for agent_move in agent_legal_moves:
+            state_successors.append(gameState.generateSuccessor(agent_index, agent_move))
+        return state_successors
 
-        util.raiseNotDefined()
+    def _get_max_value(self, gameState, search_depth):
+        value = -self.INF               # JUST Small enough
+        PACMAN_INDEX = 0                # Pre-defined index
+        pacman_successors = self._get_successor_of_state(gameState, PACMAN_INDEX)
+        for successor in pacman_successors:
+            value = max(value, self._get_value(successor, 1, search_depth))
+        return value
+
+    def _get_min_value(self, gameState, agent_index, search_depth):
+        value = self.INF                               # JUST Big enough
+        ghost_num = gameState.getNumAgents() - 1
+        ghost_successors = self._get_successor_of_state(gameState, agent_index)
+        if ghost_num == 1:
+            for successor in ghost_successors:
+                value = min(value, self._get_value(successor, 0, search_depth + 1))
+            return value
+        else:
+            if agent_index == 1:
+                for successor in ghost_successors:
+                    value = min(value, self._get_value(successor, 2, search_depth))
+            else:
+                for successor in ghost_successors:
+                    value = min(value, self._get_value(successor, 0, search_depth + 1))
+            return value
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
