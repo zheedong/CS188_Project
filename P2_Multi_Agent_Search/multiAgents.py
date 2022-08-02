@@ -135,8 +135,6 @@ class MultiAgentSearchAgent(Agent):
         self.evaluationFunction = util.lookup(evalFn, globals())
         self.depth = int(depth)
 
-import pdb
-
 class MinimaxAgent(MultiAgentSearchAgent):
     """
     Your minimax agent (question 2)
