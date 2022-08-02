@@ -164,31 +164,49 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        MAX_SCORE = 1000000000000
 
-        if gameState.isWin() or gameState.isLose():     # Check terminal state
-            return
-        num_agents = gameState.getNumAgents()       # 2
+        num_agents = gameState.getNumAgents()       # TODO : agent 수에 맞게 min 탐색하기 - 현재는 1이라고 가정
 
-        # MAX
-        pacaman_legal_moves = gameState.getLegalActions(0)     # Get the legal move of pacman
-        print(pacaman_legal_moves)
-        successor_0 = gameState.generateSuccessor(0, pacaman_legal_moves[0])    # Pacman move to 'Left'
-        print(successor_0.isLose())     # True
-        successor_0_score = self.evaluationFunction(successor_0)
-
-        successor_1 = gameState.generateSuccessor(0, pacaman_legal_moves[1])
-        print(successor_1.isLose())     # True
-        successor_1_score = self.evaluationFunction(successor_1)
-
-        # MIN - successor_0
-        ghost_legal_moves = successor_0.getLegalActions(1)
-        print(ghost_legal_moves)
-        successor_0_0 = successor_0.generateSuccessor(1, ghost_legal_moves[0])
-        successor_0_0_score = self.evaluationFunction(successor_0_0)
+        for _ in range(0, self.depth):
+            
 
 
         util.raiseNotDefined()
+
+    def _get_value(self, gameState, is_max):
+        if self._check_is_terminal_state(gameState):
+            return self.evaluationFunction(gameState)
+        elif is_max == True:
+            return self._get_max_value(gameState) 
+        else:
+            return self._get_min_value(gameState)
+
+    def _check_is_terminal_state(self, gameState):
+        util.raiseNotDefined
+
+    def _get_successor_of_state(self, gameState, agent_index):
+        agent_legal_moves = gameState.getLegalActions(agent_index)
+        state_successors = []
+        for agent_move in agent_legal_moves:
+            state_successors.append(gameState.generateSuccessor(agent_index, agent_move))
+        return state_successors
+
+    def _get_max_value(self, gameState):
+        value = -10000000000000         # JUST Small enough
+        PACMAN_INDEX = 0                # Pre-defined index
+        pacman_successors = self._get_successor_of_state(gameState, PACMAN_INDEX)
+        for successor in pacman_successors:
+            value = max(value, self._get_value(successor))
+        return value
+
+    def _get_min_value(self, gameState):
+        value = 10000000000000           # JUST Big enough
+        GHOST_INDEX = 1                  # Pre-defined index
+        ghost_successors = self._get_successor_of_state(gameState, GHOST_INDEX)
+        for successor in ghost_successors:
+            value = min(value, self._get_value(successor))
+        return value
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
