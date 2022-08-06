@@ -230,7 +230,64 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        pacman_legal_moves = gameState.getLegalActions(self.PACMAN_INDEX)
+        value = -self.INF
+        alpha = -self.INF
+        beta = self.INF
+        for pacman_move in pacman_legal_moves:
+            successor = gameState.generateSuccessor(self.PACMAN_INDEX, pacman_move)
+            cur_value = self._get_value(successor, 1, self.INIT_DEPTH, alpha, beta)
+            if value < cur_value:
+                value = cur_value
+                best_move = pacman_move
+            if value > beta:
+                break
+            alpha = max(alpha, value)
+        return best_move
+
+    INF = 100000000000
+    PACMAN_INDEX = 0
+    INIT_DEPTH = 0
+
+    def _get_value(self, gameState, agent_index, current_search_depth, alpha, beta):
+        if self._check_is_terminal_state(gameState, current_search_depth):
+            return self.evaluationFunction(gameState)
+        elif agent_index == self.PACMAN_INDEX:
+            return self._get_max_value(gameState, current_search_depth, alpha, beta) 
+        else:
+            return self._get_min_value(gameState, agent_index, current_search_depth, alpha, beta)
+
+    def _check_is_terminal_state(self, gameState, current_search_depth):
+        if current_search_depth == self.depth or gameState.isWin() or gameState.isLose():
+            return True
+        else:
+            return False
+
+    def _get_max_value(self, gameState, search_depth, alpha, beta):
+        value = -self.INF
+        pacman_legal_moves = gameState.getLegalActions(self.PACMAN_INDEX)
+        for pacman_move in pacman_legal_moves:
+            successor = gameState.generateSuccessor(self.PACMAN_INDEX, pacman_move)
+            value = max(value, self._get_value(successor, 1, search_depth, alpha, beta))         # 1 is the index of the ghost
+            if value > beta:
+                return value
+            alpha = max(alpha, value)
+        return value
+
+    def _get_min_value(self, gameState, agent_index, search_depth, alpha, beta):
+        value = self.INF
+        ghost_num = gameState.getNumAgents() - 1
+        ghost_legal_moves = gameState.getLegalActions(agent_index)
+        for ghost_move in ghost_legal_moves:
+            successor = gameState.generateSuccessor(agent_index, ghost_move)
+            if agent_index == ghost_num:
+                value = min(value, self._get_value(successor, self.PACMAN_INDEX, search_depth + 1, alpha, beta))     # min layer finished
+            else:
+                value = min(value, self._get_value(successor, agent_index + 1, search_depth, alpha, beta))
+            if value < alpha:
+                return value
+            beta = min(beta, value)
+        return value
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
