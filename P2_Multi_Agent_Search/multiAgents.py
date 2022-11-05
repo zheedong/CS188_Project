@@ -358,7 +358,78 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    '''
+    pacman_position = currentGameState.getPacmanPosition()
+    num_food = currentGameState.getNumFood()
+    # score = currentGameState.getScore()
+    ghost_states = currentGameState.getGhostStates()
+    scared_times = [ghost_state.scaredTimer for ghost_state in ghost_states]
+    food_list = currentGameState.getFood().asList()
 
+    try:
+        return currentGameState.getScore() - 10 * sorted([manhattanDistance(food, pacman_position) for food in food_list])[0]
+    except:
+        return currentGameState.getScore()
+
+    eps = 0.000000001
+    score = 10 / (num_food + eps)
+    pacman_food_man_distance = sorted([manhattanDistance(food, pacman_position) for food in food_list])
+    half = pacman_food_man_distance[:num_food//2 + 1]
+    score += 1 / (sum(half) + eps)
+    #
+    for i in range(0,len(ghost_states)):
+        ghost_state = ghost_states[i]
+        pacman_ghost_distance = manhattanDistance(pacman_position, ghost_state.getPosition())
+        scared_time = ghost_state.scaredTimer
+        if pacman_ghost_distance < 2:
+            score -= 10000000
+    #
+    if num_food == 0:
+        score = -100
+
+    # print(score)
+    # return score
+    '''
+
+    ##############
+    position = currentGameState.getPacmanPosition()
+    food = currentGameState.getFood()
+    ghosts = currentGameState.getGhostStates()
+    scaredGhost = [ghostState.scaredTimer for ghostState in ghosts]
+    
+    foodList = food.asList()
+    foodDistance = [0]
+    
+    for f in foodList:
+        foodDistance.append(manhattanDistance(position, f))
+
+    ghostLocation = []
+    for ghost in ghosts:
+        ghostLocation.append(ghost.getPosition())
+    
+    ghostDistance = [0]
+    
+    for l in ghostLocation:
+        ghostDistance.append(manhattanDistance(position, l))
+
+    totalPowerPellets = len(currentGameState.getCapsules())
+
+    score = 0
+    eatenFood = len(food.asList(False))           
+    totalTimesScared = sum(scaredGhost)
+    totalGhostDistances = sum(ghostDistance)
+    foodDistances = 0
+    
+    if sum(foodDistance) > 0:
+        foodDistances = 1.0 / sum(foodDistance)
+        
+    score += currentGameState.getScore()  + foodDistances + eatenFood
+
+    if totalTimesScared > 0:    
+        score +=   totalTimesScared + (-1 * totalPowerPellets) + (-1 * totalGhostDistances)
+    else :
+        score +=  totalGhostDistances + totalPowerPellets
+    
+    return score
 # Abbreviation
 better = betterEvaluationFunction
